@@ -1,0 +1,198 @@
+/* ============================================================
+   林林通·绿融通 全局设计系统
+   主题：清新生态绿 · 专业感 · 高级感 · 毛玻璃质感
+============================================================ */
+:root {
+  /* 主色调 - 生态绿系列 */
+  --primary: #10b981;
+  --primary-dark: #059669;
+  --primary-darker: #047857;
+  --primary-light: #34d399;
+  --primary-lighter: #6ee7b7;
+  --primary-bg: #ecfdf5;
+  --primary-bg-2: #d1fae5;
+
+  /* 辅助色 - 自然色系 */
+  --accent-amber: #f59e0b;
+  --accent-amber-bg: #fffbeb;
+  --accent-blue: #0ea5e9;
+  --accent-blue-bg: #f0f9ff;
+  --accent-rose: #f43f5e;
+  --accent-rose-bg: #fff1f2;
+
+  /* 中性色 */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-tertiary: #64748b;
+  --text-light: #94a3b8;
+  --text-disabled: #cbd5e1;
+
+  /* 背景 */
+  --bg-page: #f8faf9;
+  --bg-card: #ffffff;
+  --bg-soft: #f0fdfa;
+  --bg-glass: rgba(255, 255, 255, 0.72);
+
+  /* 边框 */
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+  --border-glass: rgba(255, 255, 255, 0.4);
+
+  /* 阴影 */
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.10);
+  --shadow-xl: 0 24px 60px rgba(16, 185, 129, 0.16);
+  --shadow-glow: 0 8px 28px rgba(16, 185, 129, 0.22);
+
+  /* 渐变 */
+  --gradient-soft: linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 100%);
+  --gradient-leaf: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 50%, #6ee7b7 100%);
+  --gradient-forest: linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%);
+  --gradient-text: linear-gradient(120deg, #047857 0%, #10b981 100%);
+}
+
+/* Element Plus 主题色覆盖 */
+:root {
+  --el-color-primary: #10b981;
+  --el-color-primary-light-3: #34d399;
+  --el-color-primary-light-5: #6ee7b7;
+  --el-color-primary-light-7: #a7f3d0;
+  --el-color-primary-light-8: #d1fae5;
+  --el-color-primary-light-9: #ecfdf5;
+  --el-color-primary-dark-2: #047857;
+}
+
+* { box-sizing: border-box; }
+html, body, #app { margin: 0; padding: 0; height: 100%; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei",
+               "Hiragino Sans GB", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  color: var(--text-primary);
+  background: var(--bg-page);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a { color: inherit; text-decoration: none; }
+a:hover { color: var(--primary); }
+
+/* ====== 通用工具类 ====== */
+.glass-card {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(16, 185, 129, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.eco-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  border: 1px solid rgba(226, 232, 240, 0.6);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.03);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.eco-card:hover {
+  box-shadow: 0 8px 30px rgba(16, 185, 129, 0.1), 0 4px 16px rgba(15, 23, 42, 0.06);
+  transform: translateY(-3px);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.page-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.section-title h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-title h2::before {
+  content: "";
+  width: 4px;
+  height: 22px;
+  background: linear-gradient(to bottom, var(--primary), var(--primary-light));
+  border-radius: 2px;
+}
+.section-title .more {
+  font-size: 13px;
+  color: var(--primary);
+  cursor: pointer;
+}
+.section-title .more:hover { color: var(--primary-darker); }
+
+.text-gradient {
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.text-shadow-3d {
+  text-shadow: 0 2px 4px rgba(4, 120, 87, 0.15), 0 4px 8px rgba(16, 185, 129, 0.08);
+}
+
+.glass-bg {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+}
+
+/* ====== Element Plus 微调 ====== */
+.el-button--primary {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+.el-button--primary:hover {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+.el-button.is-round { border-radius: 999px; }
+
+.el-card { border-radius: 16px; box-shadow: var(--shadow-sm); }
+
+.el-input__wrapper, .el-textarea__inner {
+  border-radius: 10px !important;
+}
+
+.el-tag {
+  border-radius: 6px;
+}
+
+/* 滚动条 */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: rgba(15, 23, 42, 0.15); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(15, 23, 42, 0.25); }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* 全局动画 */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up { animation: fadeInUp 0.6s ease both; }
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
+}
+.pulse-glow { animation: pulse-glow 2s infinite; }

@@ -1,0 +1,353 @@
+========================================================================
+  林林通·绿融通 一站式生态银行综合服务网站 —— 部署启动教程（IDEA版）
+========================================================================
+
+本教程面向零基础用户，手把手指导你从"拿到源码"到"浏览器看到完整网站"。
+全程分 5 大步骤，请严格按顺序执行。
+
+========================================================================
+                         目录
+========================================================================
+一、需要安装的软件清单
+二、安装 JDK 17
+三、安装 MySQL 8.0 并初始化数据库
+四、安装 Node.js
+五、使用 IDEA 导入并启动后端
+六、启动前端
+七、验证项目运行
+八、常见问题排查
+
+========================================================================
+一、需要安装的软件清单
+========================================================================
+
+┌───────────────┬─────────────────┬──────────────────────────────────────────────────────────┐
+│ 软件          │ 版本要求        │ 下载地址                                                 │
+├───────────────┼─────────────────┼──────────────────────────────────────────────────────────┤
+│ JDK           │ 17 或 11        │ https://www.oracle.com/java/technologies/downloads/      │
+│               │ (推荐 17)       │ 或 https://adoptium.net/zh-CN/temurin/releases/          │
+├───────────────┼─────────────────┼──────────────────────────────────────────────────────────┤
+│ IntelliJ IDEA │ 2022+ 社区版    │ https://www.jetbrains.com/idea/download/                 │
+│               │ 即可            │ （选 Community 免费版即可）                                │
+├───────────────┼─────────────────┼──────────────────────────────────────────────────────────┤
+│ MySQL         │ 8.0+            │ https://dev.mysql.com/downloads/installer/               │
+│               │                 │ （选 mysql-installer-community）                          │
+├───────────────┼─────────────────┼──────────────────────────────────────────────────────────┤
+│ Node.js       │ 18+ (推荐 20)   │ https://nodejs.org/zh-cn/download                       │
+│               │                 │ （选 LTS 长期支持版）                                     │
+├───────────────┼─────────────────┼──────────────────────────────────────────────────────────┤
+│ Navicat       │ 可选（数据库    │ https://www.navicat.com.cn/download/navicat-premium      │
+│ (可选)        │ 可视化工具）    │ 或使用 MySQL 自带的命令行/Workbench                      │
+└───────────────┴─────────────────┴──────────────────────────────────────────────────────────┘
+
+
+========================================================================
+二、安装 JDK 17
+========================================================================
+
+1. 打开浏览器，访问 https://adoptium.net/zh-CN/temurin/releases/
+   （推荐 Adoptium，免费且无 Oracle 商业限制）
+
+2. 选择：
+   - Operating System: Windows
+   - Architecture: x64
+   - Package Type: JDK
+   - Version: 17 (LTS)
+   点击下载 .msi 安装包
+
+3. 双击 .msi 安装，全程点 Next 即可
+   ⚠ 安装过程中勾选 "Set JAVA_HOME variable" 和 "Add to PATH"
+
+4. 验证安装是否成功：
+   - 按 Win+R，输入 cmd，回车打开命令行
+   - 输入：java -version
+   - 看到类似 "openjdk version 17.0.x" 就说明成功
+
+   如果提示 "不是内部或外部命令"：
+   → 手动配置环境变量：
+     a. 右键"此电脑" → 属性 → 高级系统设置 → 环境变量
+     b. 系统变量 → 新建：
+        变量名: JAVA_HOME
+        变量值: C:\Program Files\Eclipse Adoptium\jdk-17.0.x.x-hotspot
+        （换成你实际的 JDK 安装目录）
+     c. 编辑 Path 变量 → 新建 → 添加: %JAVA_HOME%\bin
+     d. 确定保存，重新打开 cmd 验证
+
+
+========================================================================
+三、安装 MySQL 8.0 并初始化数据库
+========================================================================
+
+【3.1 安装 MySQL】
+
+1. 打开 https://dev.mysql.com/downloads/installer/
+2. 下载 mysql-installer-community-8.0.x.x.msi
+   （网页底部可能需要点 "No thanks, just start my download."）
+
+3. 双击安装包，选择 "Developer Default" 或 "Server only"
+4. 安装过程中重点注意以下设置：
+   - Authentication Method: 选 "Use Legacy Authentication Method"
+     （推荐，避免一些驱动兼容问题）
+   - Root Password: 设置为 root
+     ⚠⚠⚠ 密码必须设置为 root ⚠⚠⚠
+     （因为后端配置文件默认使用 root/root）
+     如果你要用其他密码，后面需要修改后端配置文件
+   - Windows Service: 勾选 "Configure MySQL Server as a Windows Service"
+   - Service Name: MySQL80（默认即可）
+   - 勾选 "Start the MySQL Server at System Startup"
+
+5. 完成安装后验证：
+   - 打开 cmd
+   - 输入: mysql -u root -proot
+   - 如果进入了 mysql> 提示符，说明安装成功
+   - 输入 exit 退出
+
+   如果提示 "mysql 不是内部或外部命令"：
+   → 将 MySQL 的 bin 目录添加到 Path 环境变量
+     通常路径为: C:\Program Files\MySQL\MySQL Server 8.0\bin
+
+【3.2 初始化数据库】
+
+⚠ 这一步必须在启动后端之前完成！
+
+方法一：使用命令行
+
+1. 打开 cmd
+2. 进入项目的 SQL 文件所在目录：
+   cd /d F:\26dan\林林通・绿融通\backend\src\main\resources\sql
+
+3. 执行导入命令：
+   mysql -u root -proot --default-character-set=utf8mb4 < init.sql
+
+4. 如果报错 "Invalid default value"，先设置 SQL 模式：
+   mysql -u root -proot -e "SET GLOBAL sql_mode='NO_ENGINE_SUBSTITUTION';"
+   然后重新执行上面的导入命令
+
+5. 验证数据库是否创建成功：
+   mysql -u root -proot -e "USE linlintong_greenfin; SHOW TABLES;"
+   应该看到 20 张表
+
+方法二：使用 Navicat（可视化方式）
+
+1. 打开 Navicat，新建连接：
+   - 连接名: 随意
+   - 主机: localhost
+   - 端口: 3306
+   - 用户名: root
+   - 密码: root
+   点击"测试连接"确认连通
+
+2. 双击连接进入，在空白处右键 → "运行 SQL 文件"
+3. 选择文件：F:\26dan\林林通・绿融通\backend\src\main\resources\sql\init.sql
+4. 编码选择 UTF-8
+5. 点击"开始"，等待执行完成
+6. 按 F5 刷新，应该看到名为 linlintong_greenfin 的数据库，展开后有 20 张表
+
+
+========================================================================
+四、安装 Node.js
+========================================================================
+
+1. 打开 https://nodejs.org/zh-cn/download
+2. 下载 Windows Installer (.msi)，选择 LTS 版本（如 20.x）
+3. 双击安装，全程默认 Next 即可
+   ⚠ 安装过程中确保勾选了 "Add to PATH"
+
+4. 验证安装：
+   - 打开 cmd
+   - 输入: node -v    → 应显示 v20.x.x 或类似版本号
+   - 输入: npm -v     → 应显示 10.x.x 或类似版本号
+
+5. 【推荐】设置 npm 国内镜像加速（下载依赖更快）：
+   npm config set registry https://registry.npmmirror.com
+
+
+========================================================================
+五、使用 IDEA 导入并启动后端
+========================================================================
+
+【5.1 打开项目】
+
+1. 打开 IntelliJ IDEA
+2. 点击 "Open" 或 "打开"
+3. 选择路径：F:\26dan\林林通・绿融通\backend
+   ⚠ 注意是选 backend 文件夹，不是整个项目根目录
+4. 点击 "OK" 打开项目
+5. IDEA 会自动识别这是一个 Maven 项目，开始下载依赖
+   ⚠ 首次打开需要等待 Maven 下载依赖，可能需要 3-10 分钟
+   右下角会显示进度条
+
+【5.2 配置 JDK】
+
+1. 如果 IDEA 提示 "Project SDK is not defined"：
+   → 点击 File → Project Structure → Project
+   → SDK 选择你安装的 JDK 17
+   → Language level 选择 17
+   → 点击 Apply → OK
+
+【5.3 检查数据库配置】
+
+1. 打开文件: src/main/resources/application.yml
+2. 检查以下配置是否与你的 MySQL 一致：
+
+   spring:
+     datasource:
+       url: jdbc:mysql://localhost:3306/linlintong_greenfin?...
+       username: root          ← 你的 MySQL 用户名
+       password: root          ← 你的 MySQL 密码
+
+   ⚠ 如果你的 MySQL 密码不是 root，把 password 改成你的密码
+
+【5.4 配置 Maven（如果依赖下载很慢）】
+
+1. 打开 IDEA → File → Settings → Build → Build Tools → Maven
+2. 将 "User settings file" 指向一个含有国内镜像的 settings.xml
+   如果没有，可以新建 C:\Users\你的用户名\.m2\settings.xml，内容如下：
+
+   <?xml version="1.0" encoding="UTF-8"?>
+   <settings>
+     <mirrors>
+       <mirror>
+         <id>aliyun</id>
+         <mirrorOf>central</mirrorOf>
+         <name>阿里云中央仓库</name>
+         <url>https://maven.aliyun.com/repository/central</url>
+       </mirror>
+     </mirrors>
+   </settings>
+
+3. 保存后，在 IDEA 右侧 Maven 面板点击刷新按钮重新下载依赖
+
+【5.5 启动后端】
+
+1. 在 IDEA 左侧项目目录中找到:
+   src → main → java → com → lly → GreenFinApplication.java
+
+2. 右键该文件 → "Run 'GreenFinApplication'"
+   或者点击类名旁边的绿色三角形 ▶ 按钮
+
+3. 观察下方控制台输出，看到以下信息说明启动成功：
+
+   Started GreenFinApplication in x.xxx seconds
+   林林通·绿融通 后端服务启动成功 :: http://localhost:8080/api
+
+4. 验证后端是否正常：
+   打开浏览器，访问: http://localhost:8080/api/stats/overview
+   如果看到 JSON 数据（如 {"resourceCount":7,...}），说明后端一切正常
+
+
+========================================================================
+六、启动前端
+========================================================================
+
+1. 打开 cmd 或 PowerShell
+2. 进入前端目录：
+   cd /d F:\26dan\林林通・绿融通\frontend
+
+3. 首次运行需要安装依赖（只需执行一次）：
+   npm install
+   ⚠ 可能需要 1-5 分钟，取决于网速
+   如果报错 "ENETWORK" 或下载超时，可能需要设置国内镜像：
+   npm config set registry https://registry.npmmirror.com
+   然后重新执行 npm install
+
+4. 启动前端开发服务器：
+   npm run dev
+
+5. 控制台会显示：
+   VITE v5.x.x ready in xxx ms
+   ➜ Local: http://localhost:5173/
+
+6. 打开浏览器，访问 http://localhost:5173/
+   看到林林通·绿融通的首页就说明成功了！🎉
+
+【可选：使用 IDEA 启动前端】
+
+1. 在 IDEA 中也可以打开一个 Terminal 终端
+2. cd 到 frontend 目录
+3. 执行 npm install 和 npm run dev
+
+
+========================================================================
+七、验证项目运行
+========================================================================
+
+打开浏览器 http://localhost:5173/，按以下步骤验证：
+
+1. 首页检查：
+   - 能看到 Hero 区域、数据统计、核心业务入口
+   - 新闻政策双栏有数据
+   - 滚动能看到问题反馈、信息披露、平台优势
+
+2. 登录测试（密码均为 123456）：
+   - 管理员: admin       → 登录后可进入后台管理
+   - 林农:   linnong01    → 可登记资源、申请评估/贷款
+   - 合作社: coop01       → 可挂牌出售、管理农产品
+   - 银行:   bank01       → 可审批贷款
+
+3. 各功能模块测试：
+   - 收储登记: 点击"收储登记中心" → 查看资源云图 / 我要登记
+   - 资产评估: 点击"资产评估中心" → 查看流程、机构、评估师
+   - 供需交易: 点击"供需交易中心" → 浏览资源市场
+   - 金融服务: 点击"金融服务中心" → 浏览产品、智能匹配
+   - 法律服务: 点击"法律服务中心" → 查看援助机构
+
+4. 后台管理测试：
+   - 用 admin 登录
+   - 点击右上角头像 → 后台管理
+   - 可以管理用户、新闻、政策、资源等全部功能
+
+
+========================================================================
+八、常见问题排查
+========================================================================
+
+Q1: 后端启动报 "Port 8080 was already in use"
+A:  端口被占用了。
+    打开 cmd 输入: netstat -ano | findstr :8080
+    找到 PID（最后一列数字），然后: taskkill /PID 对应数字 /F
+
+Q2: 后端启动报 "Communications link failure" 或连不上数据库
+A:  - 确认 MySQL 服务是否启动（服务管理器中找 MySQL80 服务）
+    - 确认数据库 linlintong_greenfin 是否已创建（执行了 init.sql）
+    - 确认 application.yml 中的用户名密码是否正确
+
+Q3: 前端 npm install 报错
+A:  - 检查 Node.js 是否安装成功: node -v
+    - 切换国内镜像: npm config set registry https://registry.npmmirror.com
+    - 删除 node_modules 文件夹后重新 npm install
+
+Q4: 前端页面打开后数据为空/接口报错
+A:  - 确认后端是否正常启动（访问 http://localhost:8080/api/stats/overview）
+    - 确认前端的 API 代理配置（vite.config.js 中的 proxy）
+    - 检查浏览器控制台（F12）是否有红色错误信息
+
+Q5: IDEA 中 Maven 依赖一直下载不下来
+A:  - 配置阿里云镜像（参见第 5.4 节）
+    - 检查网络连接
+    - 在 IDEA 的 Maven 面板点击刷新按钮
+
+Q6: 登录后报 "Token 过期" 或自动退出
+A:  JWT 默认有效期 168 小时（7天），Token 存在 localStorage 中。
+    清除浏览器缓存后重新登录即可。
+
+Q7: MySQL 密码不是 root 怎么办？
+A:  修改 backend/src/main/resources/application.yml 文件：
+    spring:
+      datasource:
+        password: 你的密码
+    保存后重启后端即可。
+
+
+========================================================================
+  技术栈一览
+========================================================================
+
+后端: SpringBoot 2.7.18 + MyBatis-Plus + Druid + JWT + MySQL 8.0
+前端: Vue3 + Vite + Element Plus + Pinia + Vue Router + ECharts + Axios
+后端端口: 8080  (API 前缀 /api)
+前端端口: 5173  (开发模式，自动代理 /api → http://localhost:8080)
+
+========================================================================
+  © 2026 林林通·绿融通 · 让绿水青山成为金山银山
+========================================================================

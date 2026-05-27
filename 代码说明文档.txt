@@ -1,0 +1,528 @@
+================================================================================
+  林林通·绿融通 —— 代码说明文档
+  一站式生态银行综合服务网站
+
+================================================================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+目录
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  一、项目概述
+  二、技术栈
+  三、项目目录结构
+  四、后端代码说明
+  五、前端代码说明
+  六、数据库设计
+  七、API 接口文档
+  八、功能模块清单
+  九、角色权限说明
+
+
+================================================================================
+一、项目概述
+================================================================================
+
+「林林通·绿融通」是一个一站式生态银行综合服务网站，聚焦林业与碳汇领域，
+整合 收储登记、资产评估、供需交易、金融服务、法律服务 五大核心业务，
+打通生态资源全业务链条，让"绿水青山"高效转化为"金山银山"。
+
+系统采用前后端分离架构：
+  - 后端：Spring Boot 2.7 + MyBatis-Plus + MySQL
+  - 前端：Vue 3 + Vite + Element Plus + ECharts
+
+
+================================================================================
+二、技术栈
+================================================================================
+
+  ┌─────────────────┬──────────────────────────────────┐
+  │     分类        │           技术                   │
+  ├─────────────────┼──────────────────────────────────┤
+  │ 后端框架        │ Spring Boot 2.7.18               │
+  │ ORM 框架        │ MyBatis-Plus 3.5.5               │
+  │ 数据库          │ MySQL 8.0+                       │
+  │ 连接池          │ Druid                            │
+  │ 认证            │ JWT (jjwt 0.11.5)                │
+  │ 工具库          │ Hutool 5.8.25、Lombok            │
+  │ 构建工具        │ Maven 3.9+                       │
+  ├─────────────────┼──────────────────────────────────┤
+  │ 前端框架        │ Vue 3.4 (Composition API)        │
+  │ 构建工具        │ Vite 5                           │
+  │ UI 组件库       │ Element Plus 2.5                 │
+  │ 路由            │ Vue Router 4                     │
+  │ 状态管理        │ Pinia                            │
+  │ HTTP 客户端     │ Axios                            │
+  │ 图表            │ ECharts 5                        │
+  │ Markdown 渲染   │ marked                           │
+  └─────────────────┴──────────────────────────────────┘
+
+
+================================================================================
+三、项目目录结构
+================================================================================
+
+林林通·绿融通/
+├── backend/                          # 后端 (Spring Boot)
+│   ├── pom.xml                       # Maven 依赖配置
+│   ├── src/main/java/com/lly/
+│   │   ├── GreenFinApplication.java  # 主启动类
+│   │   ├── config/                   # 配置类
+│   │   │   ├── CorsConfig.java       #   跨域配置
+│   │   │   ├── MybatisPlusConfig.java#   MyBatis-Plus 分页插件
+│   │   │   └── WebMvcConfig.java     #   Web MVC 配置 (拦截器/静态资源)
+│   │   ├── controller/               # 控制器 (REST API)
+│   │   │   ├── AuthController.java   #   登录/注册/会话
+│   │   │   ├── StatsController.java  #   数据统计 (仪表盘)
+│   │   │   ├── NewsController.java   #   新闻动态 CRUD
+│   │   │   ├── PolicyController.java #   政策解读 CRUD
+│   │   │   ├── ResourceController.java#  收储登记资源 CRUD
+│   │   │   ├── EvaluationOrgController.java  # 评估机构
+│   │   │   ├── EvaluatorController.java      # 评估师
+│   │   │   ├── EvaluationApplyController.java# 评估申请
+│   │   │   ├── ListingController.java        # 资源供给挂牌
+│   │   │   ├── DemandController.java         # 资源需求发布
+│   │   │   ├── AppointmentController.java    # 预约洽谈
+│   │   │   ├── FarmProductController.java    # 特色农产品
+│   │   │   ├── ProductOrderController.java   # 农产品订单
+│   │   │   ├── FinanceProductController.java # 金融产品
+│   │   │   ├── LoanApplyController.java      # 贷款申请
+│   │   │   ├── LegalOrgController.java       # 法律援助机构
+│   │   │   ├── LawyerController.java         # 律师
+│   │   │   ├── LegalConsultController.java   # 法律咨询
+│   │   │   ├── DisclosureController.java     # 信息披露
+│   │   │   ├── FeedbackController.java       # 问题反馈
+│   │   │   ├── FileController.java           # 文件上传
+│   │   │   └── UserController.java           # 用户管理
+│   │   ├── entity/                   # 实体类 (对应数据库表)
+│   │   ├── mapper/                   # MyBatis Mapper 接口
+│   │   ├── interceptor/              # 拦截器
+│   │   │   └── AuthInterceptor.java  #   JWT 认证拦截器
+│   │   └── utils/                    # 工具类
+│   │       ├── JwtUtils.java         #   JWT 生成/验证
+│   │       ├── PageUtils.java        #   分页结果封装
+│   │       └── R.java                #   统一响应体
+│   ├── src/main/resources/
+│   │   ├── application.yml           # 应用配置 (数据库/端口/JWT)
+│   │   └── sql/init.sql              # 数据库初始化脚本
+│   └── uploads/                      # 文件上传目录
+│
+├── frontend/                         # 前端 (Vue 3)
+│   ├── package.json                  # npm 依赖配置
+│   ├── vite.config.js                # Vite 配置 (代理/端口)
+│   ├── index.html                    # HTML 入口
+│   ├── src/
+│   │   ├── main.js                   # 应用入口
+│   │   ├── App.vue                   # 根组件
+│   │   ├── style.css                 # 全局样式 (CSS 变量/主题)
+│   │   ├── api/
+│   │   │   └── request.js            # Axios 封装 (拦截器/Token)
+│   │   ├── store/
+│   │   │   └── index.js              # Pinia 状态 (用户/Token)
+│   │   ├── router/
+│   │   │   └── index.js              # Vue Router 路由配置
+│   │   ├── components/               # 公共组件
+│   │   │   ├── PageHeader.vue        #   页面头部 (标题/面包屑)
+│   │   │   └── EasyCrud.vue          #   通用 CRUD 表格组件
+│   │   └── views/                    # 页面组件
+│   │       ├── public/               #   前台公共页面
+│   │       │   ├── PublicLayout.vue   #     前台布局 (导航/底部)
+│   │       │   ├── HomePage.vue       #     首页
+│   │       │   ├── NewsList.vue       #     新闻列表
+│   │       │   ├── NewsDetail.vue     #     新闻详情
+│   │       │   ├── PolicyList.vue     #     政策列表
+│   │       │   ├── PolicyDetail.vue   #     政策详情
+│   │       │   ├── DisclosureList.vue #     信息披露列表
+│   │       │   ├── DisclosureDetail.vue#    信息披露详情
+│   │       │   ├── DisclosurePublish.vue#   发布信息披露
+│   │       │   ├── FeedbackForm.vue   #     问题反馈表单
+│   │       │   └── Profile.vue        #     个人中心
+│   │       ├── auth/                 #   认证页面
+│   │       │   ├── Login.vue          #     登录
+│   │       │   └── Register.vue       #     注册
+│   │       ├── resource/             #   收储登记模块
+│   │       │   ├── ResourceCenter.vue #     收储登记中心
+│   │       │   ├── ResourceMap.vue    #     资源云图 (GIS)
+│   │       │   ├── ResourceRegister.vue#    资源登记表单
+│   │       │   └── MyResources.vue    #     我的登记
+│   │       ├── evaluation/           #   资产评估模块
+│   │       │   ├── EvaluationCenter.vue#    评估中心
+│   │       │   ├── OrgList.vue        #     评估机构列表
+│   │       │   ├── EvaluatorList.vue   #     评估师列表
+│   │       │   ├── ApplyForm.vue      #     评估申请表单
+│   │       │   └── MyApplications.vue #     我的评估申请
+│   │       ├── trading/              #   供需交易模块
+│   │       │   ├── TradingCenter.vue  #     交易中心
+│   │       │   ├── ListingMarket.vue  #     供给市场 (挂牌列表)
+│   │       │   ├── ListingDetail.vue  #     挂牌详情
+│   │       │   ├── DemandMarket.vue   #     需求市场
+│   │       │   ├── DemandDetail.vue   #     需求详情
+│   │       │   ├── SellForm.vue       #     发布供给
+│   │       │   ├── BuyForm.vue        #     发布需求
+│   │       │   ├── FarmMarket.vue     #     特色农产品展销
+│   │       │   ├── FarmDetail.vue     #     农产品详情
+│   │       │   ├── MyListings.vue     #     我的挂牌
+│   │       │   ├── MyDemands.vue      #     我的需求
+│   │       │   └── MyAppointments.vue #     我的预约
+│   │       ├── finance/              #   金融服务模块
+│   │       │   ├── FinanceCenter.vue  #     金融服务中心
+│   │       │   ├── ProductList.vue    #     金融产品列表
+│   │       │   ├── ProductDetail.vue  #     产品详情
+│   │       │   ├── ProductMatch.vue   #     智能匹配
+│   │       │   ├── LoanApply.vue      #     贷款申请
+│   │       │   ├── MyLoans.vue        #     我的贷款
+│   │       │   └── BankReview.vue     #     银行端审批
+│   │       ├── legal/                #   法律服务模块
+│   │       │   ├── LegalCenter.vue    #     法律服务中心
+│   │       │   ├── OrgList.vue        #     法律机构列表
+│   │       │   ├── LawyerList.vue     #     律师列表
+│   │       │   ├── ConsultForm.vue    #     区域援助咨询
+│   │       │   ├── ExclusiveForm.vue  #     专属咨询
+│   │       │   └── MyConsults.vue     #     我的咨询
+│   │       └── admin/                #   后台管理
+│   │           ├── AdminLayout.vue    #     后台布局 (侧边栏)
+│   │           ├── Dashboard.vue      #     数据仪表盘 (ECharts)
+│   │           ├── UserManage.vue     #     用户管理
+│   │           ├── NewsManage.vue     #     新闻管理
+│   │           ├── PolicyManage.vue   #     政策管理
+│   │           ├── FeedbackManage.vue #     反馈管理
+│   │           ├── DisclosureManage.vue#    披露管理
+│   │           ├── ResourceManage.vue #     资源管理
+│   │           ├── EvaluationOrgManage.vue  # 评估机构管理
+│   │           ├── EvaluatorManage.vue     # 评估师管理
+│   │           ├── EvaluationApplyManage.vue# 评估申请管理
+│   │           ├── ListingManage.vue       # 挂牌管理
+│   │           ├── DemandManage.vue        # 需求管理
+│   │           ├── FarmProductManage.vue   # 农产品管理
+│   │           ├── FinanceProductManage.vue# 金融产品管理
+│   │           ├── LoanApplyManage.vue    # 贷款管理
+│   │           ├── LegalOrgManage.vue     # 法律机构管理
+│   │           ├── LawyerManage.vue       # 律师管理
+│   │           └── LegalConsultManage.vue # 法律咨询管理
+│
+├── 部署启动教程（详细版）.txt         # 部署指南
+├── 代码说明文档.txt                   # 本文档
+└── README.md                         # 项目说明
+
+
+================================================================================
+四、后端代码说明
+================================================================================
+
+────────────────────────────────────────
+4.1 主启动类
+────────────────────────────────────────
+  GreenFinApplication.java
+  - @SpringBootApplication：Spring Boot 自动配置
+  - @MapperScan("com.lly.mapper")：扫描 MyBatis Mapper 接口
+
+────────────────────────────────────────
+4.2 配置类 (config/)
+────────────────────────────────────────
+  CorsConfig.java      — 全局跨域配置，允许前端（localhost:5173）访问后端
+  MybatisPlusConfig.java — 注册 MyBatis-Plus 分页拦截器
+  WebMvcConfig.java    — 注册 JWT 认证拦截器，配置静态资源映射
+
+────────────────────────────────────────
+4.3 控制器 (controller/)
+────────────────────────────────────────
+  每个控制器对应一个业务模块，统一使用 RESTful 风格：
+  - GET /list       — 分页查询列表（支持筛选/搜索）
+  - GET /detail/{id}— 查询详情
+  - POST /save      — 新增
+  - PUT /update     — 修改
+  - DELETE /delete   — 删除（接收 ID 数组）
+
+  特殊接口：
+  - AuthController：POST /auth/login（登录）、POST /auth/register（注册）
+  - StatsController：GET /stats/overview（总览数据）、
+                     GET /stats/resource-distribution（资源分布）、
+                     GET /stats/trend（增长趋势，供 ECharts 使用）
+  - FinanceProductController：POST /finance-product/match（智能匹配金融产品）
+  - FileController：POST /file/upload（文件上传，保存到 uploads/ 目录）
+
+────────────────────────────────────────
+4.4 实体类 (entity/)
+────────────────────────────────────────
+  每个实体类对应一张数据库表，使用 Lombok 简化代码：
+  - @Data：自动生成 getter/setter/toString
+  - @TableName("t_xxx")：指定对应的数据库表名
+  - @TableId(type = IdType.AUTO)：主键自增
+
+────────────────────────────────────────
+4.5 Mapper (mapper/)
+────────────────────────────────────────
+  继承 MyBatis-Plus 的 BaseMapper<T>，无需编写 SQL，
+  自动提供 insert/selectById/selectList/selectPage/updateById/deleteById 等方法。
+
+────────────────────────────────────────
+4.6 认证拦截器 (interceptor/)
+────────────────────────────────────────
+  AuthInterceptor.java：
+  - 拦截需要登录的接口
+  - 从请求头中取出 Token 字段
+  - 使用 JwtUtils 验证 Token 有效性
+  - 将用户 ID、用户名、角色注入到 Request 属性中
+
+────────────────────────────────────────
+4.7 工具类 (utils/)
+────────────────────────────────────────
+  JwtUtils.java   — JWT Token 的生成与解析，密钥和过期时间从 application.yml 读取
+  PageUtils.java  — 将 MyBatis-Plus 的 Page 对象封装为 { list, totalCount, ... }
+  R.java          — 统一响应体 { code: 0, msg: "success", data: ... }
+
+────────────────────────────────────────
+4.8 配置文件 (application.yml)
+────────────────────────────────────────
+  关键配置项：
+  - server.port: 8080              — 后端端口
+  - server.servlet.context-path: /api — API 前缀
+  - spring.datasource.*            — 数据库连接信息
+  - jwt.secret                     — JWT 密钥
+  - jwt.expire-hours: 168          — Token 有效期（7天）
+  - file.upload-path: ./uploads/   — 文件上传目录
+
+
+================================================================================
+五、前端代码说明
+================================================================================
+
+────────────────────────────────────────
+5.1 入口文件
+────────────────────────────────────────
+  main.js：
+  - 创建 Vue 应用实例
+  - 注册 Element Plus 组件库和图标
+  - 注册 Pinia 状态管理
+  - 注册 Vue Router
+  - 挂载应用
+
+────────────────────────────────────────
+5.2 全局样式 (style.css)
+────────────────────────────────────────
+  定义了全局 CSS 变量（主题色、渐变色、圆角、阴影等），
+  所有页面统一使用这些变量，确保视觉一致性。
+  主色调为绿色系（#10b981 - emerald）。
+
+────────────────────────────────────────
+5.3 API 封装 (api/request.js)
+────────────────────────────────────────
+  基于 Axios 封装：
+  - baseURL: '/api'（通过 Vite 代理到后端 8080）
+  - 请求拦截器：自动在请求头中添加 Token
+  - 响应拦截器：
+    - code === 0：请求成功
+    - code === 401：未登录/Token 过期，自动跳转登录页
+    - 其他：显示错误提示
+
+────────────────────────────────────────
+5.4 状态管理 (store/index.js)
+────────────────────────────────────────
+  使用 Pinia 管理用户状态：
+  - token、user、role：从 localStorage 初始化
+  - isLogin：计算属性，判断是否已登录
+  - setLogin()：登录成功后存储 Token 和用户信息
+  - logout()：清除登录状态
+
+────────────────────────────────────────
+5.5 路由配置 (router/index.js)
+────────────────────────────────────────
+  分为两大部分：
+  1. 前台路由（PublicLayout 布局下）：
+     首页、新闻/政策、收储登记、评估、交易、金融、法律等
+  2. 后台路由（AdminLayout 布局下）：
+     仪表盘、各模块管理页面（仅管理员可访问）
+
+  路由守卫：
+  - 公开页面无需登录即可访问
+  - 需要权限的页面检查 Token
+  - 后台管理检查角色是否为"管理员"
+
+────────────────────────────────────────
+5.6 公共组件 (components/)
+────────────────────────────────────────
+  PageHeader.vue：页面顶部标题栏，支持渐变背景
+  EasyCrud.vue：通用 CRUD 表格组件，后台管理页面大量复用
+
+────────────────────────────────────────
+5.7 页面组件说明
+────────────────────────────────────────
+  每个页面组件使用 Vue 3 Composition API (setup 语法)，
+  通过 request.js 调用后端 API，使用 Element Plus 组件呈现界面。
+
+  图表页面（Dashboard.vue）使用 ECharts：
+  - 饼图：资源类型分布（来自 /stats/resource-distribution）
+  - 柱状图：核心业务量统计（来自 /stats/overview）
+  - 折线图：近7天增长趋势（来自 /stats/trend）
+  所有图表数据均来自数据库实时查询，会随数据变化自动更新。
+
+
+================================================================================
+六、数据库设计
+================================================================================
+
+  数据库名：linlintong_greenfin
+  字符集：utf8mb4
+  共 20 张表：
+
+  ┌────┬───────────────────┬────────────────────────┐
+  │编号│      表名         │         说明           │
+  ├────┼───────────────────┼────────────────────────┤
+  │  1 │ t_user            │ 用户表（10种角色）     │
+  │  2 │ t_news            │ 新闻动态               │
+  │  3 │ t_policy          │ 政策解读               │
+  │  4 │ t_feedback        │ 用户反馈               │
+  │  5 │ t_disclosure      │ 企业信息披露           │
+  │  6 │ t_resource        │ 生态资源（收储登记）   │
+  │  7 │ t_evaluation_org  │ 评估机构               │
+  │  8 │ t_evaluator       │ 评估师                 │
+  │  9 │ t_evaluation_apply│ 评估申请               │
+  │ 10 │ t_listing         │ 资源供给挂牌           │
+  │ 11 │ t_demand          │ 资源需求发布           │
+  │ 12 │ t_appointment     │ 预约洽谈               │
+  │ 13 │ t_farm_product    │ 地方特色农产品         │
+  │ 14 │ t_product_order   │ 农产品订单             │
+  │ 15 │ t_finance_product │ 金融产品               │
+  │ 16 │ t_loan_apply      │ 贷款申请               │
+  │ 17 │ t_legal_org       │ 法律援助机构           │
+  │ 18 │ t_lawyer          │ 律师                   │
+  │ 19 │ t_legal_consult   │ 法律咨询申请           │
+  │ 20 │ t_stats_daily     │ 每日统计快照           │
+  └────┴───────────────────┴────────────────────────┘
+
+  详细表结构和字段说明请参见：
+  backend/src/main/resources/sql/init.sql
+
+
+================================================================================
+七、API 接口文档
+================================================================================
+
+  基础路径：http://localhost:8080/api
+
+  认证方式：请求头传 Token 字段
+  响应格式：{ "code": 0, "msg": "success", "data": {...} }
+
+  ┌────────────────────────────────────────────────────────────────┐
+  │                    认证接口                                   │
+  ├─────────────────────────┬──────┬──────────────────────────────┤
+  │ 接口地址                │ 方法 │ 说明                         │
+  ├─────────────────────────┼──────┼──────────────────────────────┤
+  │ /auth/login             │ POST │ 登录（返回 Token + 用户信息）│
+  │ /auth/register          │ POST │ 注册                         │
+  │ /auth/session           │ GET  │ 获取当前登录用户信息         │
+  │ /auth/profile           │ PUT  │ 修改个人资料                 │
+  └─────────────────────────┴──────┴──────────────────────────────┘
+
+  ┌────────────────────────────────────────────────────────────────┐
+  │                    统计接口                                   │
+  ├─────────────────────────┬──────┬──────────────────────────────┤
+  │ /stats/overview         │ GET  │ 数据总览（供首页和仪表盘）   │
+  │ /stats/resource-dist..  │ GET  │ 资源类型分布（饼图）         │
+  │ /stats/trend            │ GET  │ 近7天增长趋势（折线图）      │
+  └─────────────────────────┴──────┴──────────────────────────────┘
+
+  ┌────────────────────────────────────────────────────────────────┐
+  │          各业务模块接口（统一 CRUD 格式）                     │
+  ├─────────────────────────┬──────┬──────────────────────────────┤
+  │ /{module}/list          │ GET  │ 分页列表（支持筛选）         │
+  │ /{module}/detail/{id}   │ GET  │ 详情                         │
+  │ /{module}/save          │ POST │ 新增                         │
+  │ /{module}/update        │ PUT  │ 修改                         │
+  │ /{module}/delete        │DELETE│ 删除（传 ID 数组）           │
+  └─────────────────────────┴──────┴──────────────────────────────┘
+
+  module 取值：
+  news、policy、feedback、disclosure、resource、
+  evaluation-org、evaluator、evaluation-apply、
+  listing、demand、appointment、
+  farm-product、product-order、
+  finance-product、loan-apply、
+  legal-org、lawyer、legal-consult、user
+
+  特殊接口：
+  - POST /finance-product/match    — 金融产品智能匹配
+  - POST /file/upload              — 文件上传
+  - GET  /news/hot                 — 热门新闻
+
+
+================================================================================
+八、功能模块清单
+================================================================================
+
+  1. 用户认证
+     - 多角色注册/登录（林农、合作社、企业、金融机构、评估师等10种角色）
+     - JWT Token 认证
+     - 个人中心（资料修改）
+
+  2. 收储登记
+     - 资源云图（GIS 可视化展示）
+     - 在线资源登记（林地/碳汇/水库/林下产品）
+     - 权属证明上传
+     - 管理员审核
+
+  3. 资产评估
+     - 评估机构/评估师公示
+     - 在线评估申请
+     - 流程跟踪（材料上报→资质核实→勘察复评→结果公示→完成）
+
+  4. 供需交易
+     - 资源供给挂牌（发布/浏览/搜索）
+     - 资源需求发布
+     - 预约洽谈
+     - 特色农产品展销与下单
+
+  5. 金融服务
+     - 绿色金融产品展示（5类：碳汇收储贷/两山农林贷/绿色工厂贷/碳中和助力贷/两山乡居贷）
+     - 产品智能匹配（根据金额/期限/身份匹配）
+     - 在线贷款申请
+     - 银行端线上审批
+
+  6. 法律服务
+     - 法律援助机构/律师库
+     - 区域援助匹配
+     - 专属法律咨询
+     - 服务跟踪
+
+  7. 新闻政策
+     - 新闻动态（首页展示 + 列表 + 详情）
+     - 政策解读（分级别展示）
+
+  8. 信息披露
+     - 企业项目信息披露
+     - 预警管理（正常/即将到期/已逾期）
+
+  9. 问题反馈
+     - 分类提交（操作咨询/意见建议/投诉举报/业务求助）
+     - 管理员回复
+
+  10. 后台管理
+      - 数据仪表盘（ECharts 实时图表）
+      - 所有业务模块的增删改查管理
+      - 用户管理
+
+
+================================================================================
+九、角色权限说明
+================================================================================
+
+  本系统支持 10 种用户角色：
+
+  ┌──────────────────┬────────────────────────────────────┐
+  │       角色       │          可使用功能                │
+  ├──────────────────┼────────────────────────────────────┤
+  │ 管理员           │ 后台管理全部功能、数据仪表盘       │
+  │ 林农             │ 资源登记、评估申请、贷款申请、     │
+  │                  │ 法律咨询、发布挂牌/需求            │
+  │ 合作社           │ 同林农 + 农产品管理                │
+  │ 企业             │ 资源交易、金融服务、信息披露       │
+  │ 金融机构         │ 金融产品管理、贷款审批             │
+  │ 林业管理部门     │ 资源审核、数据查看                 │
+  │ 评估机构         │ 评估申请管理                       │
+  │ 评估师           │ 评估任务处理                       │
+  │ 法律援助机构     │ 法律咨询管理                       │
+  │ 律师             │ 法律咨询对接                       │
+  └──────────────────┴────────────────────────────────────┘
+
+================================================================================
+  文档结束
+================================================================================
